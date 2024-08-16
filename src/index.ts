@@ -4,9 +4,9 @@ const main = () => {
   const iframe = document.getElementById('msBingFrame') as HTMLIFrameElement;
   let counter = 0;
   let intervalId: number;
+  let mainIntervalId: number;
 
   const randomText = () => {
-    // random number between 1 and 10
     const wordCount = Math.floor(Math.random() * 10) + 1; 
     return randomWords(wordCount).join(' ');
   }
@@ -15,18 +15,33 @@ const main = () => {
     const searchString = randomText();
     iframe.src = `https://www.bing.com/search?q=${searchString}&PC=U316&FORM=CHROMN`;
     counter++;
-    console.log('counter', counter);
-    // browser
-    // 150 / 5 = 30 // search in bing
-    // 20 / 5 = 4   // search via bing
-    // mobile
-    // 100 / 5 = 20
+
     if (counter === 35) {
       clearInterval(intervalId);
+      clearInterval(mainIntervalId);
     }
   }
 
-  intervalId = setInterval(func, 8000) as any;
+  const start8SecondInterval = () => {
+    let innerCounter = 0;
+
+    intervalId = setInterval(() => {
+      if (innerCounter < 3) {
+        func();
+        innerCounter++;
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 8000);
+  }
+
+  mainIntervalId = setInterval(() => {
+    if (counter < 35) {
+      start8SecondInterval();
+    } else {
+      clearInterval(mainIntervalId);
+    }
+  }, 30000);
 }
 
 main();
